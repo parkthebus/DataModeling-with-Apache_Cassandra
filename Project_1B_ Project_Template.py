@@ -40,64 +40,10 @@ for root, dirs, files in os.walk(filepath):
     file_path_list = glob.glob(os.path.join(root,'*.csv'))
     total_file_path_list += file_path_list
 total_file_path_list = [f for f in total_file_path_list if '.ipynb_checkpoints' not in f]
-total_file_path_list
+print(f'total_file_path_list : {total_file_path_list}')
 
 
 # #### Processing the files to create the data file csv that will be used for Apache Casssandra tables
-
-# In[17]:
-
-
-# initiating an empty list of rows that will be generated from each file
-full_data_rows_list = [] 
-
-# for every filepath in the file path list 
-for f in file_path_list:
-# reading csv file 
-    with open(f, 'r', encoding = 'utf8', newline='') as csvfile: 
-        # creating a csv reader object 
-        csvreader = csv.reader(csvfile) 
-        next(csvreader)
-# extracting each data row one by one and append it        
-        for line in csvreader:
-#             print(f'\tline : {line}')
-            full_data_rows_list.append(line)  
-
-
-# In[18]:
-
-
-
-# uncomment the code below if you would like to get total number of rows 
-print(len(full_data_rows_list))
-# uncomment the code below if you would like to check to see what the list of event data rows will look like
-print(full_data_rows_list[:2])
-
-# creating a smaller event data csv file called event_datafile_full csv that will be used to insert data into the \
-# Apache Cassandra tables
-csv.register_dialect('myDialect', quoting=csv.QUOTE_ALL, skipinitialspace=True)
-
-with open('event_datafile_new.csv', 'w', encoding = 'utf8', newline='') as f:
-    writer = csv.writer(f, dialect='myDialect')
-    writer.writerow(['artist','firstName','gender','itemInSession','lastName','length',    'level','location','sessionId','song','userId'])
-    for row in full_data_rows_list:
-        if (row[0] == ''): continue
-        writer.writerow((row[0], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[12], row[13], row[16]))
-
-
-# In[5]:
-
-
-# check the number of rows in your csv file
-with open('event_datafile_new.csv', 'r', encoding = 'utf8') as f:
-    print(sum(1 for line in f))
-
-
-# In[ ]:
-
-
-
-
 
 # I tried to do on alternative way to process csv files (pandas)
 # -----
@@ -117,7 +63,6 @@ for num,f in enumerate(total_file_path_list):
 all_dataframe = pd.concat(dataframe_list)
 all_dataframe = all_dataframe.loc[all_dataframe['artist'].isna()==False]
 all_dataframe = all_dataframe[['artist','firstName','gender','itemInSession','lastName','length', 'level','location','sessionId','song','userId']]
-all_dataframe.head(1)
 
 
 # In[91]:
@@ -129,7 +74,6 @@ all_dataframe.to_csv('event_datafile_new.csv', mode='w', index=False, encoding='
 # In[93]:
 
 
-pd.read_csv(file).head(1)
 
 
 # # Part II. Complete the Apache Cassandra coding portion of your project. 
@@ -240,13 +184,6 @@ except Exception as e:
     print(e)
 
 
-# In[88]:
-
-
-pd.read_csv(file).head(1)
-
-
-# In[104]:
 
 
 # We have provided part of the code to set up the CSV file. Please complete the Apache Cassandra code below#
